@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+docker_cli_plugin_metadata() {
+	local vendor="jygastaud"
+	local version="v0.0.1"
+	local url="https://github.com/jygastaud/docker-buildc"
+	local description="Build and Run at the same time with Docker CLI"
+	cat <<-EOF
+	{"SchemaVersion":"0.1.0","Vendor":"${vendor}","Version":"${version}","ShortDescription":"${description}","URL":"${url}"}
+EOF
+}
+
+help()
+{
+   # Display Help
+   echo "Usage: docker buildrun COMMAND"
+   echo
+   echo "A docker plugin to manage your kubernetes using docker CLI UX"
+   echo
+   echo "Commands:"
+   echo "run [tag] [Dockerfile]  Build and Run container"
+   echo "help        Print this Help."
+   echo
+}
+
+buildrun() {
+  docker build -t "${1}" "${2:-.}" && docker run --rm -it "${1}"
+}
+
+case "${1}" in
+        docker-cli-plugin-metadata)
+                docker_cli_plugin_metadata
+                ;;
+        *)
+		shift
+
+        case "${1}" in
+            run)
+
+                buildrun "${@:2}"
+                ;;
+            *)
+                help
+                ;;
+        esac
+        ;;
+esac
